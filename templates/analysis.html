@@ -1,0 +1,165 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card shadow-lg mb-4 custom-card">
+  <!-- Card Header -->
+  <div class="card-header text-center bg-gradient-warning text-white">
+    <h3>Analyse Object: {{ object_name }}</h3>
+  </div>
+
+  <!-- Card Body -->
+  <div class="card-body">
+    <!-- Analysis Controls Section -->
+    <form method="POST" class="mb-4">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-4">
+          <label for="analysis_type" class="form-label fw-bold">Select Analysis Type</label>
+          <select class="form-select form-select-lg" id="analysis_type" name="analysis_type" required>
+            <option value="" selected disabled>Choose analysis method</option>
+            <option value="Manual">Manual Analysis</option>
+            <option value="Automatic">Automatic Analysis</option>
+            <option value="AI">AI Analysis</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="altitude" class="form-label fw-bold">Altitude (mm)</label>
+          <input type="range" class="form-range" min="0" max="600" step="5" id="altitude" name="altitude" oninput="document.getElementById('altitude_val').innerText=this.value">
+          <span id="altitude_val" class="fw-bold">300</span>
+        </div>
+        <div class="col-md-4">
+          <label for="angle" class="form-label fw-bold">Angle (°)</label>
+          <input type="range" class="form-range" min="0" max="80" step="5" id="angle" name="angle" oninput="document.getElementById('angle_val').innerText=this.value">
+          <span id="angle_val" class="fw-bold">40</span>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <button type="submit" class="btn btn-warning btn-custom">Start Analysis</button>
+      </div>
+    </form>
+    <!-- End Analysis Controls Section -->
+
+    <!-- Image and Magnifier Section -->
+    <div class="row">
+      <!-- Left Column: Original Image with Magnifier -->
+      <div class="col-md-6">
+        <div class="card shadow mb-4">
+          <div class="card-header bg-secondary text-white text-center">
+            <h5>Original Image</h5>
+          </div>
+          <div class="card-body position-relative">
+            <div class="img-magnifier-container" style="position: relative; display: inline-block;">
+              <img id="original-image" src="{{ url_for('static', filename='images/sample.jpg') }}"
+                   alt="Original Image"
+                   class="img-fluid"
+                   style="border: 2px solid #ccc; border-radius: 5px; max-width: 300px;">
+              <!-- The lens will be inserted here dynamically by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column: Fixed Zoom View -->
+      <div class="col-md-6">
+        <div class="card shadow mb-4">
+          <div class="card-header bg-secondary text-white text-center">
+            <h5>Zoomed View</h5>
+          </div>
+          <div class="card-body text-center">
+            <div id="result" class="img-zoom-result"></div>
+            <p class="mt-2 text-muted">Move the cursor over the original image to update the zoom.
+              Click once on the original image to lock/unlock the rectangle (yellow = locked).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Image and Magnifier Section -->
+
+    <!-- Action Buttons Section -->
+    <div class="row mt-4">
+      <div class="col text-start">
+        <a href="{{ url_for('robot', object_name=object_name) }}" class="btn btn-outline-secondary btn-custom">Quit without saving</a>
+      </div>
+      <div class="col text-end">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-danger btn-custom">Quit &amp; Save</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Magnifier function: creates a lens over the original image, updates the zoomed view,
+// and toggles lock on single click (clicking the image toggles whether the lens moves).
+function magnify(imgID, resultID) {
+  const img = document.getElementById(imgID);
+  const result = document.getElementById(resultID);
+
+  // Remove any existing lens.
+  const oldLens = document.getElementById("lens");
+  if (oldLens) oldLens.remove();
+
+  // Create lens element.
+  const lens = document.createElement("div");
+  lens.id = "lens";
+  lens.className = "lens";
+  img.parentElement.insertBefore(lens, img);
+
+  let isLocked = false;
+
+  // Toggle lock state on image click.
+  img.addEventListener("click", () => {
+    isLocked = !isLocked;
+    if (isLocked) {
+      lens.style.border = "2px solid yellow";
+      lens.style.backgroundColor = "rgba(255, 255, 0, 0.5)";
+    } else {
+      lens.style.border = "2px solid red";
+      lens.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+    }
+  });
+
+  const cx = result.offsetWidth / lens.offsetWidth;
+  const cy = result.offsetHeight / lens.offsetHeight;
+
+  result.style.backgroundImage = `url('${img.src}')`;
+  result.style.backgroundSize = `${img.width * cx}px ${img.height * cy}px`;
+
+  // Update lens position on mouse move.
+  img.addEventListener("mousemove", moveLens);
+  lens.addEventListener("mousemove", moveLens);
+
+  function moveLens(e) {
+    if (isLocked) return; // If locked, do not update the lens.
+    e.preventDefault();
+    const pos = getCursorPos(e);
+    let x = pos.x - lens.offsetWidth / 2;
+    let y = pos.y - lens.offsetHeight / 2;
+    if (x < 0) x = 0;
+    if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
+    if (y < 0) y = 0;
+    if (y > img.height - lens.offsetHeight) y = img.height - lens.offsetHeight;
+    lens.style.left = x + "px";
+    lens.style.top = y + "px";
+    result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
+  }
+
+  function getCursorPos(e) {
+    const rect = img.getBoundingClientRect();
+    const x = e.pageX - rect.left - window.pageXOffset;
+    const y = e.pageY - rect.top - window.pageYOffset;
+    return { x, y };
+  }
+}
+
+// Initialize the magnifier when the page loads.
+window.onload = function () {
+  magnify("original-image", "result");
+};
+
+// Update the magnifier when a thumbnail is clicked (if implemented).
+function selectImage(imgSrc) {
+  const orig = document.getElementById("original-image");
+  orig.src = imgSrc;
+  document.getElementById("result").style.backgroundImage = "url('" + imgSrc + "')";
+  magnify("original-image", "result");
+}
+</script>
+{% endblock %}

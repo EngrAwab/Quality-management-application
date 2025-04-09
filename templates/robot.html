@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card shadow-lg mb-4 custom-card mx-auto" style="max-width:600px;">
+  <div class="card-header text-center bg-gradient-success text-white">
+    <h3>Robot &amp; Camera Interface</h3>
+  </div>
+  <div class="card-body">
+    <p class="fs-5 text-center"><strong>Object Name:</strong> {{ object_name }}</p>
+    <p class="fs-5 text-center"><strong>Uploaded Image:</strong> {{ filename }}</p>
+    <p class="text-center mb-4">
+      This page simulates sending coordinates to the robot and will now load the default image automatically.
+    </p>
+    <div class="text-center mb-4">
+      <img src="{{ url_for('static', filename='images/sample.jpg') }}" alt="Default Image" class="img-fluid d-block mx-auto" style="max-width: 300px; border: 2px solid #ccc; border-radius: 5px;">
+    </div>
+    <form method="POST">
+      <div class="text-center">
+        <button type="submit" class="btn btn-success btn-custom">Launch Robot</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

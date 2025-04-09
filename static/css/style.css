@@ -1,0 +1,102 @@
+/* Global styles */
+body {
+    background: linear-gradient(135deg, #E0F7FA, #E8EAF6);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+  
+  .main-content {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+  
+  /* Card styling */
+  .custom-card {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  /* Gradient backgrounds for card headers */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #2196F3, #1E88E5);
+  }
+  
+  .bg-gradient-success {
+    background: linear-gradient(135deg, #4CAF50, #43A047);
+  }
+  
+  .bg-gradient-warning {
+    background: linear-gradient(135deg, #FB8C00, #F57C00);
+  }
+  
+  /* Footer styling */
+  footer {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Custom button styles */
+  .btn-custom {
+    font-size: 1.2rem;
+    padding: 15px 25px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: none;
+  }
+  
+  .btn-custom:active {
+    transform: scale(0.98);
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+  }
+  
+  /* Thumbnail styles for photo selection */
+  .thumb-img {
+    max-width: 150px;
+    width: 100%;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .thumb-img:hover {
+    opacity: 0.8;
+  }
+  
+  /* Lens styles for the magnifier (initially red) */
+  .lens {
+    position: absolute;
+    border: 2px solid red;
+    width: 80px;
+    height: 80px;
+    opacity: 0.5;
+    background-color: rgba(255, 0, 0, 0.2);
+    pointer-events: none;
+  }
+  
+  /* Zoom result container */
+  .img-zoom-result {
+    border: 2px solid #ccc;
+    width: 300px;
+    height: 300px;
+    background-repeat: no-repeat;
+  }
+  
+  /* Center content in card bodies */
+  .card-body {
+    text-align: center;
+  }
+  /* Lens styles for the magnifier (initially red) */
+.lens {
+    position: absolute;
+    border: 2px solid red;
+    width: 80px;
+    height: 80px;
+    opacity: 0.5;
+    background-color: rgba(255, 0, 0, 0.2);
+    /* Remove pointer-events: none; so the lens can receive clicks */
+    /* pointer-events: none; */
+  }
+  
+  

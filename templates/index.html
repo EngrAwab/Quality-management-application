@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card shadow-lg mb-4 custom-card mx-auto" style="max-width:600px;">
+  <div class="card-header text-center bg-gradient-primary text-white">
+    <h3>New Object</h3>
+  </div>
+  <div class="card-body">
+    <form method="POST" enctype="multipart/form-data">
+      <div class="mb-4">
+        <label for="object_name" class="form-label fw-bold">Object Name</label>
+        <input type="text" class="form-control" id="object_name" name="object_name" placeholder="Enter object name" required>
+      </div>
+      <div class="mb-4">
+        <label for="input_file" class="form-label fw-bold">Upload Image</label>
+        <input type="file" class="form-control" id="input_file" name="input_file" accept=".jpg, .jpeg, .png" required>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary btn-custom">Submit &amp; Continue</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
