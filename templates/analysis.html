@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="card shadow-lg mb-4 custom-card">
-  <!-- Card Header -->
+  <!-- Header -->
   <div class="card-header text-center bg-gradient-warning text-white">
     <h3>Analyse Object: {{ object_name }}</h3>
   </div>
 
-  <!-- Card Body -->
+  <!-- Body -->
   <div class="card-body">
-    <!-- Analysis Controls Section -->
+    <!-- Analysis Controls -->
     <form method="POST" class="mb-4">
       <div class="row g-3 align-items-center">
         <div class="col-md-4">
@@ -35,11 +35,11 @@
         <button type="submit" class="btn btn-warning btn-custom">Start Analysis</button>
       </div>
     </form>
-    <!-- End Analysis Controls Section -->
+    <!-- End Analysis Controls -->
 
-    <!-- Image and Magnifier Section -->
+    <!-- Images Section -->
     <div class="row">
-      <!-- Left Column: Original Image with Magnifier -->
+      <!-- Left Column: Original Image with Lens -->
       <div class="col-md-6">
         <div class="card shadow mb-4">
           <div class="card-header bg-secondary text-white text-center">
@@ -47,17 +47,15 @@
           </div>
           <div class="card-body position-relative">
             <div class="img-magnifier-container" style="position: relative; display: inline-block;">
-              <img id="original-image" src="{{ url_for('static', filename='images/sample.jpg') }}"
-                   alt="Original Image"
-                   class="img-fluid"
-                   style="border: 2px solid #ccc; border-radius: 5px; max-width: 300px;">
-              <!-- The lens will be inserted here dynamically by JavaScript -->
+              <img id="original-image" src="{{ url_for('static', filename='images/sample.jpg') }}" alt="Original Image"
+                   class="img-fluid" style="border: 2px solid #ccc; border-radius: 5px; max-width:300px;">
+              <!-- The lens will be dynamically inserted by JS -->
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- Right Column: Fixed Zoom View -->
+
+      <!-- Right Column: Fixed Zoomed View -->
       <div class="col-md-6">
         <div class="card shadow mb-4">
           <div class="card-header bg-secondary text-white text-center">
@@ -65,15 +63,17 @@
           </div>
           <div class="card-body text-center">
             <div id="result" class="img-zoom-result"></div>
-            <p class="mt-2 text-muted">Move the cursor over the original image to update the zoom.
-              Click once on the original image to lock/unlock the rectangle (yellow = locked).</p>
+            <p class="mt-2 text-muted">
+              Move your cursor over the original image.<br>
+              Click the image to lock/unlock the lens (yellow when locked) so that the zoomed view remains fixed.
+            </p>
           </div>
         </div>
       </div>
     </div>
-    <!-- End Image and Magnifier Section -->
+    <!-- End Images Section -->
 
-    <!-- Action Buttons Section -->
+    <!-- Action Buttons -->
     <div class="row mt-4">
       <div class="col text-start">
         <a href="{{ url_for('robot', object_name=object_name) }}" class="btn btn-outline-secondary btn-custom">Quit without saving</a>
@@ -86,8 +86,8 @@
 </div>
 
 <script>
-// Magnifier function: creates a lens over the original image, updates the zoomed view,
-// and toggles lock on single click (clicking the image toggles whether the lens moves).
+// Magnifier function: creates a movable lens over the original image and displays its magnified area in a fixed "result" box.
+// Clicking the image toggles lock/unlock so that once locked, the lens stops moving and the zoomed view remains fixed.
 function magnify(imgID, resultID) {
   const img = document.getElementById(imgID);
   const result = document.getElementById(resultID);
@@ -96,7 +96,7 @@ function magnify(imgID, resultID) {
   const oldLens = document.getElementById("lens");
   if (oldLens) oldLens.remove();
 
-  // Create lens element.
+  // Create a new lens.
   const lens = document.createElement("div");
   lens.id = "lens";
   lens.className = "lens";
@@ -122,12 +122,12 @@ function magnify(imgID, resultID) {
   result.style.backgroundImage = `url('${img.src}')`;
   result.style.backgroundSize = `${img.width * cx}px ${img.height * cy}px`;
 
-  // Update lens position on mouse move.
+  // Update lens position when the cursor moves on the image.
   img.addEventListener("mousemove", moveLens);
   lens.addEventListener("mousemove", moveLens);
 
   function moveLens(e) {
-    if (isLocked) return; // If locked, do not update the lens.
+    if (isLocked) return; // Do not update if the lens is locked.
     e.preventDefault();
     const pos = getCursorPos(e);
     let x = pos.x - lens.offsetWidth / 2;
@@ -149,12 +149,12 @@ function magnify(imgID, resultID) {
   }
 }
 
-// Initialize the magnifier when the page loads.
+// Initialize magnifier on window load.
 window.onload = function () {
   magnify("original-image", "result");
 };
 
-// Update the magnifier when a thumbnail is clicked (if implemented).
+// Function to update the original image from a thumbnail (if needed).
 function selectImage(imgSrc) {
   const orig = document.getElementById("original-image");
   orig.src = imgSrc;
