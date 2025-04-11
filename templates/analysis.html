@@ -1,12 +1,8 @@
 {% extends "layout.html" %}
+{% block page_heading %}Image Analysis{% endblock %}
 {% block content %}
 <div class="card shadow-lg mb-4 custom-card">
-  <!-- Header -->
-  <div class="card-header text-center bg-gradient-warning text-white">
-    <h3>Analyse Object: {{ object_name }}</h3>
-  </div>
-
-  <!-- Body -->
+  <!-- Card Body -->
   <div class="card-body">
     <!-- Analysis Controls -->
     <form method="POST" class="mb-4">
@@ -37,24 +33,24 @@
     </form>
     <!-- End Analysis Controls -->
 
-    <!-- Images Section -->
+    <!-- Images Section: Two Parallel Columns -->
     <div class="row">
-      <!-- Left Column: Original Image with Lens -->
+      <!-- Left Column: Original Image with Magnifier Lens -->
       <div class="col-md-6">
         <div class="card shadow mb-4">
           <div class="card-header bg-secondary text-white text-center">
             <h5>Original Image</h5>
           </div>
           <div class="card-body position-relative">
+            <!-- Container for the image and lens -->
             <div class="img-magnifier-container" style="position: relative; display: inline-block;">
               <img id="original-image" src="{{ url_for('static', filename='images/sample.jpg') }}" alt="Original Image"
-                   class="img-fluid" style="border: 2px solid #ccc; border-radius: 5px; max-width:300px;">
-              <!-- The lens will be dynamically inserted by JS -->
+                   class="img-fluid" style="border:2px solid #ccc; border-radius:5px; max-width:300px;">
+              <!-- The lens will be inserted here by JavaScript -->
             </div>
           </div>
         </div>
       </div>
-
       <!-- Right Column: Fixed Zoomed View -->
       <div class="col-md-6">
         <div class="card shadow mb-4">
@@ -65,7 +61,7 @@
             <div id="result" class="img-zoom-result"></div>
             <p class="mt-2 text-muted">
               Move your cursor over the original image.<br>
-              Click the image to lock/unlock the lens (yellow when locked) so that the zoomed view remains fixed.
+              Click anywhere in the image area to toggle lock on the lens (yellow = locked).
             </p>
           </div>
         </div>
@@ -85,81 +81,77 @@
   </div>
 </div>
 
+<!-- Updated Magnifier JavaScript -->
 <script>
-// Magnifier function: creates a movable lens over the original image and displays its magnified area in a fixed "result" box.
-// Clicking the image toggles lock/unlock so that once locked, the lens stops moving and the zoomed view remains fixed.
-function magnify(imgID, resultID) {
-  const img = document.getElementById(imgID);
-  const result = document.getElementById(resultID);
+document.addEventListener('DOMContentLoaded', function() {
+  function magnify(imgID, resultID) {
+    const img = document.getElementById(imgID);
+    const result = document.getElementById(resultID);
 
-  // Remove any existing lens.
-  const oldLens = document.getElementById("lens");
-  if (oldLens) oldLens.remove();
+    // Remove any existing lens.
+    const oldLens = document.getElementById("lens");
+    if (oldLens) oldLens.remove();
 
-  // Create a new lens.
-  const lens = document.createElement("div");
-  lens.id = "lens";
-  lens.className = "lens";
-  img.parentElement.insertBefore(lens, img);
+    // Create lens element.
+    const lens = document.createElement("div");
+    lens.id = "lens";
+    lens.className = "lens";
+    // Insert lens into the container of the image.
+    const container = img.parentElement;
+    container.insertBefore(lens, img);
 
-  let isLocked = false;
+    let isLocked = false;
 
-  // Toggle lock state on image click.
-  img.addEventListener("click", () => {
-    isLocked = !isLocked;
-    if (isLocked) {
-      lens.style.border = "2px solid yellow";
-      lens.style.backgroundColor = "rgba(255, 255, 0, 0.5)";
-    } else {
-      lens.style.border = "2px solid red";
-      lens.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+    // Toggle lock state on container click.
+    container.addEventListener("click", function(e) {
+      // Prevent mousemove from immediately resetting the lens after a click
+      e.stopPropagation();
+      isLocked = !isLocked;
+      if (isLocked) {
+        lens.style.border = "2px solid yellow";
+        lens.style.backgroundColor = "rgba(255, 255, 0, 0.5)";
+      } else {
+        lens.style.border = "2px solid red";
+        lens.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+      }
+    });
+
+    const cx = result.offsetWidth / lens.offsetWidth;
+    const cy = result.offsetHeight / lens.offsetHeight;
+
+    result.style.backgroundImage = "url('" + img.src + "')";
+    result.style.backgroundSize = (img.width * cx) + "px " + (img.height * cy) + "px";
+
+    // Update lens position on mouse move.
+    img.addEventListener("mousemove", moveLens);
+    lens.addEventListener("mousemove", moveLens);
+
+    function moveLens(e) {
+      if (isLocked) return; // When locked, do not update the lens.
+      e.preventDefault();
+      const pos = getCursorPos(e);
+      let x = pos.x - (lens.offsetWidth / 2);
+      let y = pos.y - (lens.offsetHeight / 2);
+      // Constrain lens within image boundaries.
+      if (x < 0) x = 0;
+      if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
+      if (y < 0) y = 0;
+      if (y > img.height - lens.offsetHeight) y = img.height - lens.offsetHeight;
+      lens.style.left = x + "px";
+      lens.style.top = y + "px";
+      result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
     }
-  });
 
-  const cx = result.offsetWidth / lens.offsetWidth;
-  const cy = result.offsetHeight / lens.offsetHeight;
-
-  result.style.backgroundImage = `url('${img.src}')`;
-  result.style.backgroundSize = `${img.width * cx}px ${img.height * cy}px`;
-
-  // Update lens position when the cursor moves on the image.
-  img.addEventListener("mousemove", moveLens);
-  lens.addEventListener("mousemove", moveLens);
-
-  function moveLens(e) {
-    if (isLocked) return; // Do not update if the lens is locked.
-    e.preventDefault();
-    const pos = getCursorPos(e);
-    let x = pos.x - lens.offsetWidth / 2;
-    let y = pos.y - lens.offsetHeight / 2;
-    if (x < 0) x = 0;
-    if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
-    if (y < 0) y = 0;
-    if (y > img.height - lens.offsetHeight) y = img.height - lens.offsetHeight;
-    lens.style.left = x + "px";
-    lens.style.top = y + "px";
-    result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
+    function getCursorPos(e) {
+      const rect = img.getBoundingClientRect();
+      const x = e.pageX - rect.left - window.pageXOffset;
+      const y = e.pageY - rect.top - window.pageYOffset;
+      return { x, y };
+    }
   }
 
-  function getCursorPos(e) {
-    const rect = img.getBoundingClientRect();
-    const x = e.pageX - rect.left - window.pageXOffset;
-    const y = e.pageY - rect.top - window.pageYOffset;
-    return { x, y };
-  }
-}
-
-// Initialize magnifier on window load.
-window.onload = function () {
+  // Initialize the magnifier.
   magnify("original-image", "result");
-};
-
-// Function to update the original image from a thumbnail (if needed).
-function selectImage(imgSrc) {
-  const orig = document.getElementById("original-image");
-  orig.src = imgSrc;
-  document.getElementById("result").style.backgroundImage = "url('" + imgSrc + "')";
-  magnify("original-image", "result");
-}
+});
 </script>
 {% endblock %}
