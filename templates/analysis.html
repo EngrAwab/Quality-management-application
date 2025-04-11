@@ -18,12 +18,14 @@
         </div>
         <div class="col-md-4">
           <label for="altitude" class="form-label fw-bold">Altitude (mm)</label>
-          <input type="range" class="form-range" min="0" max="600" step="5" id="altitude" name="altitude" oninput="document.getElementById('altitude_val').innerText=this.value">
+          <input type="range" class="form-range" min="0" max="600" step="5" id="altitude" name="altitude" 
+                 oninput="document.getElementById('altitude_val').innerText=this.value">
           <span id="altitude_val" class="fw-bold">300</span>
         </div>
         <div class="col-md-4">
           <label for="angle" class="form-label fw-bold">Angle (°)</label>
-          <input type="range" class="form-range" min="0" max="80" step="5" id="angle" name="angle" oninput="document.getElementById('angle_val').innerText=this.value">
+          <input type="range" class="form-range" min="0" max="80" step="5" id="angle" name="angle" 
+                 oninput="document.getElementById('angle_val').innerText=this.value">
           <span id="angle_val" class="fw-bold">40</span>
         </div>
       </div>
@@ -38,50 +40,56 @@
       <!-- Left Column: Original Image with Magnifier Lens -->
       <div class="col-md-6">
         <div class="card shadow mb-4">
-          <div class="card-header bg-secondary text-white text-center">
-            <h5>Original Image</h5>
-          </div>
+          
           <div class="card-body position-relative">
-            <!-- Container for the image and lens -->
-            <div class="img-magnifier-container" style="position: relative; display: inline-block;">
-              <img id="original-image" src="{{ url_for('static', filename='images/sample.jpg') }}" alt="Original Image"
-                   class="img-fluid" style="border:2px solid #ccc; border-radius:5px; max-width:300px;">
-              <!-- The lens will be inserted here by JavaScript -->
+            <!-- Single flex container for both elements -->
+            <div class="image-con">
+              <!-- Original Image Container (Left Side) -->
+              <div class="img-magnifier-container me-3" style="position: relative; display: inline-block;">
+                <img id="original-image" src="{{ url_for('static', filename='images/sample.jpg') }}" alt="Original Image"
+                     class="img-fluid" style="border:2px solid #ccc; border-radius:5px; max-width:300px;">
+                <!-- The lens will be inserted here by JavaScript -->
+                <div class="card-header bg-secondary text-white text-center">
+                  <h5>Original Image</h5>
+                </div>
+              </div>
+              
+              <!-- Zoomed View Container (Right Side) -->
+              <div class="card shadow mb-4" style="max-width: 350px;">
+                <div class="card-body text-center">
+                  <div id="result" class="img-zoom-result" style="width: 300px; height: 300px; margin: auto;"></div>
+                </div>
+                <div class="card-header bg-secondary text-white text-center">
+                  <h5>Zoomed View</h5>
+                </div>
+              </div>
             </div>
           </div>
+          
         </div>
       </div>
-      <!-- Right Column: Fixed Zoomed View -->
-      <div class="col-md-6">
-        <div class="card shadow mb-4">
-          <div class="card-header bg-secondary text-white text-center">
-            <h5>Zoomed View</h5>
-          </div>
-          <div class="card-body text-center">
-            <div id="result" class="img-zoom-result"></div>
-            <p class="mt-2 text-muted">
-              Move your cursor over the original image.<br>
-              Click anywhere in the image area to toggle lock on the lens (yellow = locked).
-            </p>
-          </div>
-        </div>
-      </div>
+      <!-- Right Column (Empty) -->
     </div>
     <!-- End Images Section -->
 
     <!-- Action Buttons -->
     <div class="row mt-4">
       <div class="col text-start">
-        <a href="{{ url_for('robot', object_name=object_name) }}" class="btn btn-outline-secondary btn-custom">Quit without saving</a>
+        <a href="{{ url_for('robot', object_name=object_name) }}" class="btn btn-outline-secondary btn-custom">
+          Quit without saving
+        </a>
       </div>
+    </div>
       <div class="col text-end">
-        <a href="{{ url_for('index') }}" class="btn btn-outline-danger btn-custom">Quit &amp; Save</a>
-      </div>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-danger btn-custom">
+          Quit &amp; Save
+        </a>
+      
     </div>
   </div>
 </div>
 
-<!-- Updated Magnifier JavaScript -->
+<!-- Updated Magnifier JavaScript (Rendered Dimensions) -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   function magnify(imgID, resultID) {
@@ -116,29 +124,34 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
+    // Calculate ratio using the offset (rendered) size of the image.
     const cx = result.offsetWidth / lens.offsetWidth;
     const cy = result.offsetHeight / lens.offsetHeight;
 
     result.style.backgroundImage = "url('" + img.src + "')";
-    result.style.backgroundSize = (img.width * cx) + "px " + (img.height * cy) + "px";
+    result.style.backgroundSize = (img.offsetWidth * cx) + "px " + (img.offsetHeight * cy) + "px";
 
     // Update lens position on mouse move.
     img.addEventListener("mousemove", moveLens);
     lens.addEventListener("mousemove", moveLens);
 
     function moveLens(e) {
-      if (isLocked) return; // When locked, do not update the lens.
+      if (isLocked) return; // If locked, do not move the lens.
       e.preventDefault();
       const pos = getCursorPos(e);
       let x = pos.x - (lens.offsetWidth / 2);
       let y = pos.y - (lens.offsetHeight / 2);
-      // Constrain lens within image boundaries.
+
+      // Constrain lens within the visible image boundaries.
       if (x < 0) x = 0;
-      if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
+      if (x > img.offsetWidth - lens.offsetWidth) x = img.offsetWidth - lens.offsetWidth;
       if (y < 0) y = 0;
-      if (y > img.height - lens.offsetHeight) y = img.height - lens.offsetHeight;
+      if (y > img.offsetHeight - lens.offsetHeight) y = img.offsetHeight - lens.offsetHeight;
+
       lens.style.left = x + "px";
       lens.style.top = y + "px";
+
+      // Update the zoomed background position.
       result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
     }
 

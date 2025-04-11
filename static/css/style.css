@@ -1,94 +1,159 @@
-/* Global Styles */
+/* Existing Global Styles */
 body {
-    font-family: 'Poppins', sans-serif;
-    background: #f8f9fa;
-    margin: 0;
-    padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+/* Header and Navbar */
+.navbar {
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+  font-size: 1.75rem;
+  color: #ffffff;
+  transition: color 0.2s ease;
+}
+
+.navbar-brand:hover {
+  color: #dfefff;
+}
+
+/* Main Content */
+.main-content {
+  padding: 40px 15px;
+}
+
+/* Card Styling */
+.custom-card {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+}
+
+/* Card Headers */
+.card-header {
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Card Body */
+.card-body {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+/* Form Controls */
+.form-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.form-select,
+.form-range,
+.form-control {
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+}
+
+/* Buttons */
+.btn-custom {
+  font-size: 1.2rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: #667eea;
+  color: #fff;
+  width: 100%;
+  max-width: 250px;
+}
+
+.btn-custom:hover {
+  background-color: #5a67d8;
+}
+
+.btn-custom:active {
+  transform: scale(0.98);
+  box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+}
+
+/* Button Row Fix */
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.button-row .btn-custom {
+  flex: 1 1 auto;
+}
+
+/* Lens Styling */
+.lens {
+  position: absolute;
+  border: 2px solid red;
+  width: 80px;
+  height: 80px;
+  opacity: 0.5;
+  background-color: rgba(255, 0, 0, 0.2);
+  pointer-events: auto;
+  z-index: 100;
+  transition: all 0.2s ease;
+}
+
+/* Zoom Result Styling */
+.img-zoom-result {
+  border: 2px solid #ccc;
+  width: 300px;
+  height: 300px;
+  background-repeat: no-repeat;
+  margin: 0 auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Image Container for Flex Layout */
+.image-con {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px; /* Space between the original and zoom images */
+}
+
+/* Footer */
+footer, .footer {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .image-con {
+    flex-direction: column;
+    align-items: center;
   }
-  
-  /* Lens styling */
-  .lens {
-    position: absolute;
-    border: 2px solid red;
-    width: 80px;
-    height: 80px;
-    opacity: 0.5;
-    background-color: rgba(255, 0, 0, 0.2);
-    pointer-events: auto;
-    z-index: 100;
-  }
-  
-  /* Zoom container styling */
+
   .img-zoom-result {
-    border: 2px solid #ccc;
-    width: 300px;
-    height: 300px;
-    background-repeat: no-repeat;
-    margin: 0 auto;
+    margin-top: 20px;
   }
-  
-/* Global Styles */
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #f8f9fa;
-    margin: 0;
-    padding: 0;
+
+  .button-row {
+    flex-direction: column;
+    align-items: stretch;
   }
-  
-  /* Header Styles (unchanged from previous version) */
-  .navbar {
-    padding: 0.75rem 1rem;
+
+  .button-row .btn-custom {
+    max-width: 100%;
   }
-  .navbar-brand {
-    font-size: 1.75rem;
-    color: #fff;
-  }
-  .navbar-brand:hover {
-    color: #dfefff;
-  }
-  
-  /* Common layout styles */
-  .main-content {
-    padding-bottom: 30px;
-  }
-  
-  /* Footer Styles */
-  .footer, footer {
-    background-color: rgba(0, 0, 0, 0.05);
-    padding: 1rem 0;
-  }
-  
-  /* Custom Button Styles */
-  .btn-custom {
-    font-size: 1.2rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    border: none;
-  }
-  .btn-custom:active {
-    transform: scale(0.98);
-    box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
-  }
-  
-  /* Lens Styling */
-  .lens {
-    position: absolute;
-    border: 2px solid red;
-    width: 80px;
-    height: 80px;
-    opacity: 0.5;
-    background-color: rgba(255, 0, 0, 0.2);
-    pointer-events: auto;
-    z-index: 100;
-  }
-  
-  /* Zoom Result Styling */
-  .img-zoom-result {
-    border: 2px solid #ccc;
-    width: 300px;
-    height: 300px;
-    background-repeat: no-repeat;
-    margin: 0 auto;
-  }
-  
+}
