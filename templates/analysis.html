@@ -33,10 +33,10 @@
     </form>
     <!-- End Analysis Controls -->
 
-    <!-- Images Section: Two Parallel Columns -->
-    <div class="row">
+    <!-- Images Section: Two Parallel Columns with extra spacing -->
+    <div class="row gx-5">
       <!-- Left Column: Original Image with Magnifier Lens -->
-      <div class="col-md-6">
+      <div class="col-md-5">
         <div class="card shadow mb-4">
           <div class="card-header bg-secondary text-white text-center">
             <h5>Original Image</h5>
@@ -52,7 +52,7 @@
         </div>
       </div>
       <!-- Right Column: Fixed Zoomed View -->
-      <div class="col-md-6">
+      <div class="col-md-5 offset-md-1">
         <div class="card shadow mb-4">
           <div class="card-header bg-secondary text-white text-center">
             <h5>Zoomed View</h5>
@@ -81,7 +81,7 @@
   </div>
 </div>
 
-<!-- Updated Magnifier JavaScript -->
+<!-- Magnifier JavaScript (unchanged) -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   function magnify(imgID, resultID) {
