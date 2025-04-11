@@ -33,10 +33,10 @@
     </form>
     <!-- End Analysis Controls -->
 
-    <!-- Images Section: Two Parallel Columns with extra horizontal space -->
-    <div class="row gx-5">
+    <!-- Images Section: Two Parallel Columns -->
+    <div class="row">
       <!-- Left Column: Original Image with Magnifier Lens -->
-      <div class="col-6">
+      <div class="col-md-6">
         <div class="card shadow mb-4">
           <div class="card-header bg-secondary text-white text-center">
             <h5>Original Image</h5>
@@ -52,7 +52,7 @@
         </div>
       </div>
       <!-- Right Column: Fixed Zoomed View -->
-      <div class="col-6">
+      <div class="col-md-6">
         <div class="card shadow mb-4">
           <div class="card-header bg-secondary text-white text-center">
             <h5>Zoomed View</h5>
@@ -81,7 +81,7 @@
   </div>
 </div>
 
-<!-- Magnifier JavaScript (unchanged) -->
+<!-- Updated Magnifier JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   function magnify(imgID, resultID) {
@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Toggle lock state on container click.
     container.addEventListener("click", function(e) {
+      // Prevent mousemove from immediately resetting the lens after a click
       e.stopPropagation();
       isLocked = !isLocked;
       if (isLocked) {
@@ -121,15 +122,17 @@ document.addEventListener('DOMContentLoaded', function() {
     result.style.backgroundImage = "url('" + img.src + "')";
     result.style.backgroundSize = (img.width * cx) + "px " + (img.height * cy) + "px";
 
+    // Update lens position on mouse move.
     img.addEventListener("mousemove", moveLens);
     lens.addEventListener("mousemove", moveLens);
 
     function moveLens(e) {
-      if (isLocked) return;
+      if (isLocked) return; // When locked, do not update the lens.
       e.preventDefault();
       const pos = getCursorPos(e);
       let x = pos.x - (lens.offsetWidth / 2);
       let y = pos.y - (lens.offsetHeight / 2);
+      // Constrain lens within image boundaries.
       if (x < 0) x = 0;
       if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
       if (y < 0) y = 0;
@@ -147,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // Initialize the magnifier.
   magnify("original-image", "result");
 });
 </script>
