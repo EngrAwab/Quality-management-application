@@ -10,7 +10,7 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # ---------------------------------------------
-#   MAIN PAGE (REDESIGNED FIRST PAGE)
+#   MAIN PAGE (FIRST PAGE)
 # ---------------------------------------------
 @app.route('/', methods=['GET'])
 def index():
@@ -51,7 +51,7 @@ def upload_coords():
 
 
 # ---------------------------------------------
-#   PAGE 1 (SECOND PAGE): ROBOT INTERFACE
+#   ROBOT INTERFACE (SECOND PAGE)
 # ---------------------------------------------
 @app.route('/robot', methods=['GET', 'POST'])
 def robot():
@@ -59,19 +59,18 @@ def robot():
     filename = request.args.get('filename', '')
 
     if request.method == 'POST':
-        # enforce that the box was checked
-        if not request.form.get('analyseCheckbox'):
-            flash('You must check “Analyse photo after photo” before launching.', 'warning')
-            return redirect(url_for('robot', object_name=object_name, filename=filename))
-
-        flash('Robot launched successfully. Coordinates have been updated.', 'success')
-        return redirect(url_for('analysis', object_name=object_name))
+        # CASE 1: checkbox was checked → proceed as before
+        if request.form.get('analyseCheckbox'):
+            flash('Robot launched successfully. Coordinates have been updated.', 'success')
+            return redirect(url_for('analysis', object_name=object_name))
+        # CASE 2: checkbox was NOT checked → go back to first page
+        return redirect(url_for('index'))
 
     return render_template('robot.html', object_name=object_name, filename=filename)
 
 
 # ---------------------------------------------
-#   PAGE 2: ANALYSIS PAGE (MAGNIFIER)
+#   ANALYSIS PAGE (THIRD PAGE)
 # ---------------------------------------------
 @app.route('/analysis', methods=['GET', 'POST'])
 def analysis():
