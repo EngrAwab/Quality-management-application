@@ -1,170 +1,346 @@
 {% extends "layout.html" %}
 {% block page_heading %}Image Analysis{% endblock %}
 {% block content %}
-<div class="card shadow-lg mb-4 custom-card">
-  <!-- Card Body -->
-  <div class="card-body">
-    <!-- Analysis Controls -->
-    <form method="POST" class="mb-4">
-      <div class="row g-3 align-items-center">
-        <div class="col-md-4">
-          <label for="analysis_type" class="form-label fw-bold">Select Analysis Type</label>
-          <select class="form-select form-select-lg" id="analysis_type" name="analysis_type" required>
-            <option value="" selected disabled>Choose analysis method</option>
-            <option value="Manual">Manual Analysis</option>
-            <option value="Automatic">Automatic Analysis</option>
-            <option value="AI">AI Analysis</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label for="altitude" class="form-label fw-bold">Altitude (mm)</label>
-          <input type="range" class="form-range" min="0" max="600" step="5" id="altitude" name="altitude" 
-                 oninput="document.getElementById('altitude_val').innerText=this.value">
-          <span id="altitude_val" class="fw-bold">300</span>
-        </div>
-        <div class="col-md-4">
-          <label for="angle" class="form-label fw-bold">Angle (°)</label>
-          <input type="range" class="form-range" min="0" max="80" step="5" id="angle" name="angle" 
-                 oninput="document.getElementById('angle_val').innerText=this.value">
-          <span id="angle_val" class="fw-bold">40</span>
-        </div>
-      </div>
-      <div class="text-center mt-3">
-        <button type="submit" class="btn btn-warning btn-custom">Start Analysis</button>
-      </div>
-    </form>
-    <!-- End Analysis Controls -->
 
-    <!-- Images Section: Two Parallel Columns -->
-    <div class="row">
-      <!-- Left Column: Original Image with Magnifier Lens -->
-      <div class="col-md-6">
-        <div class="card shadow mb-4">
-          
-          <div class="card-body position-relative">
-            <!-- Single flex container for both elements -->
-            <div class="image-con">
-              <!-- Original Image Container (Left Side) -->
-              <div class="img-magnifier-container me-3" style="position: relative; display: inline-block;">
-                <img id="original-image" src="{{ url_for('static', filename='images/sample.jpg') }}" alt="Original Image"
-                     class="img-fluid" style="border:2px solid #ccc; border-radius:5px; max-width:300px;">
-                <!-- The lens will be inserted here by JavaScript -->
-                <div class="card-header bg-secondary text-white text-center">
-                  <h5>Original Image</h5>
-                </div>
-              </div>
-              
-              <!-- Zoomed View Container (Right Side) -->
-              <div class="card shadow mb-4" style="max-width: 350px;">
-                <div class="card-body text-center">
-                  <div id="result" class="img-zoom-result" style="width: 300px; height: 300px; margin: auto;"></div>
-                </div>
-                <div class="card-header bg-secondary text-white text-center">
-                  <h5>Zoomed View</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-          
+<style>
+  /* Main row: Left card (Original + Altitude + Angle) & right card (Zoomed + Sliders) */
+  .image-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+    justify-content: center; /* center horizontally */
+    align-items: flex-start;
+    margin-bottom: 2rem; /* space below cards */
+  }
+
+  .image-card {
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    padding: 1rem;
+    text-align: center;
+    flex: 0 0 auto;
+  }
+
+  /* Original Image */
+  #original-image {
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    display: block;
+    max-width: 240px;
+    height: auto;
+  }
+
+  /* Zoomed Image Container */
+  #result {
+    border: 2px solid #ccc;
+    background-repeat: no-repeat;
+    margin-bottom: 1rem;
+  }
+
+  /* Lens styling */
+  .lens {
+    opacity: 0.6;
+    transition: all 0.2s ease;
+  }
+
+  /* Original image + altitude horizontally side-by-side */
+  .orig-alt-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  /* Altitude mini-card */
+  .altitude-controls {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0.75rem 1rem;
+    background-color: #fff;
+    min-width: 120px;
+  }
+
+  /* Angle controls below the original image card */
+  .angle-controls {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0.75rem 1rem;
+    background-color: #fff;
+    margin-top: 1rem;
+    text-align: center;
+    display: inline-block;
+  }
+
+  /* Luminosity & Contrast controls under the zoomed image */
+  .lum-contrast-controls {
+    margin-top: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0.75rem 1rem;
+    background-color: #fff;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .slider-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  .slider-group label {
+    margin-right: 0.5rem;
+    font-weight: bold;
+  }
+  .slider-group input[type="range"] {
+    flex: 1 1 auto;
+    margin-right: 0.5rem;
+  }
+  .slider-group input[type="number"] {
+    width: 60px;
+    text-align: center;
+  }
+
+  /* Highlight the selected altitude/angle option */
+  .btn-check:checked + .btn.btn-outline-primary {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+  }
+
+  /* 
+    A row underneath the cards, with two columns:
+    - Left column: 3 stacked analysis buttons (Manual, Automatic, AI)
+    - Right column: 2 stacked quit buttons (Quit & Save, Quit without saving)
+  */
+  .buttons-row {
+    display: flex;
+    flex-wrap: wrap;      /* if narrow, can wrap to a new line */
+    justify-content: center;
+    gap: 6rem;            /* horizontal space between left stack & right stack */
+    margin-bottom: 2rem;  /* spacing below */
+  }
+
+  /* Each column is a vertical stack of buttons */
+  .buttons-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Big blue button styling (common to both analysis + quit) */
+  .big-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    text-align: center;
+    min-width: 180px;
+    cursor: pointer;
+    text-decoration: none; /* remove underline if anchor */
+  }
+  .big-button:hover {
+    background-color: #0069d9;
+  }
+</style>
+
+<!-- MAIN ROW: left (Original + Altitude + Angle) & right (Zoomed + Sliders) -->
+<div class="image-row">
+  <!-- LEFT Card: Original Image + Altitude + Angle -->
+  <div class="image-card">
+    <h5>Original Image + Altitude</h5>
+    <div class="orig-alt-container">
+      <!-- Original Image -->
+      <div>
+        <div class="img-magnifier-container" style="position: relative; display: inline-block;">
+          <img id="original-image" 
+               src="{{ url_for('static', filename='images/sample.jpg') }}" 
+               alt="Original Image">
         </div>
       </div>
-      <!-- Right Column (Empty) -->
-    </div>
-    <!-- End Images Section -->
-
-    <!-- Action Buttons -->
-    <div class="row mt-4">
-      <div class="col text-start">
-        <a href="{{ url_for('robot', object_name=object_name) }}" class="btn btn-outline-secondary btn-custom">
-          Quit without saving
-        </a>
+      <!-- Altitude Controls -->
+      <div class="altitude-controls">
+        <h6 class="fw-bold mb-2">Altitude (mm)</h6>
+        <div class="mb-1">
+          <input type="radio" class="btn-check" name="altitudeRadio" id="alt545" value="545" checked>
+          <label class="btn btn-outline-primary btn-sm" for="alt545">545</label>
+        </div>
+        <div class="mb-1">
+          <input type="radio" class="btn-check" name="altitudeRadio" id="alt470" value="470">
+          <label class="btn btn-outline-primary btn-sm" for="alt470">470</label>
+        </div>
+        <div class="mb-1">
+          <input type="radio" class="btn-check" name="altitudeRadio" id="alt330" value="330">
+          <label class="btn btn-outline-primary btn-sm" for="alt330">330</label>
+        </div>
+        <div>
+          <input type="radio" class="btn-check" name="altitudeRadio" id="alt0" value="0">
+          <label class="btn btn-outline-primary btn-sm" for="alt0">0</label>
+        </div>
       </div>
     </div>
-      <div class="col text-end">
-        <a href="{{ url_for('index') }}" class="btn btn-outline-danger btn-custom">
-          Quit &amp; Save
-        </a>
-      
+
+    <!-- Angle below -->
+    <div class="angle-controls mx-auto">
+      <h6 class="fw-bold mb-2">Angle (°)</h6>
+      <input type="radio" class="btn-check" name="angleRadio" id="angle0" value="0" checked>
+      <label class="btn btn-outline-primary btn-sm me-1" for="angle0">0°</label>
+      <input type="radio" class="btn-check" name="angleRadio" id="angle20" value="20">
+      <label class="btn btn-outline-primary btn-sm me-1" for="angle20">20°</label>
+      <input type="radio" class="btn-check" name="angleRadio" id="angle40" value="40">
+      <label class="btn btn-outline-primary btn-sm me-1" for="angle40">40°</label>
+      <input type="radio" class="btn-check" name="angleRadio" id="angle60" value="60">
+      <label class="btn btn-outline-primary btn-sm me-1" for="angle60">60°</label>
+      <input type="radio" class="btn-check" name="angleRadio" id="angle80" value="80">
+      <label class="btn btn-outline-primary btn-sm" for="angle80">80°</label>
+    </div>
+  </div>
+
+  <!-- RIGHT Card: Zoomed View + Sliders -->
+  <div class="image-card">
+    <h5>Zoomed View</h5>
+    <div id="result"></div>
+
+    <!-- Luminosity & Contrast Sliders -->
+    <div class="lum-contrast-controls">
+      <div class="slider-group">
+        <label for="lumSlider">Luminosity</label>
+        <input type="range" id="lumSlider" min="0" max="100" step="1" value="0">
+        <input type="number" id="lumVal" min="0" max="100" step="1" value="0">%
+      </div>
+      <div class="slider-group">
+        <label for="conSlider">Contrast</label>
+        <input type="range" id="conSlider" min="0" max="100" step="1" value="0">
+        <input type="number" id="conVal" min="0" max="100" step="1" value="0">%
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Updated Magnifier JavaScript (Rendered Dimensions) -->
+<!-- 
+  A single row with two columns: 
+  Left column => 3 stacked analysis buttons 
+  Right column => 2 stacked quit buttons
+  All are pushed to the right side, outside the cards.
+-->
+<div class="buttons-row">
+  <!-- Left Column: 3 stacked analysis buttons -->
+  <div class="buttons-col">
+    <form method="POST">
+      <button type="submit" name="analysis_type" value="Manual" class="big-button">
+        Manual analysis
+      </button>
+    </form>
+    <form method="POST">
+      <button type="submit" name="analysis_type" value="Automatic" class="big-button">
+        Automatic analysis
+      </button>
+    </form>
+    <form method="POST">
+      <button type="submit" name="analysis_type" value="AI" class="big-button">
+        AI analysis
+      </button>
+    </form>
+  </div>
+  <!-- Right Column: 2 stacked quit buttons -->
+  <div class="buttons-col">
+    <a href="{{ url_for('index') }}" class="big-button">
+      Quit &amp; Save
+    </a>
+    <a href="{{ url_for('robot', object_name=object_name) }}" class="big-button">
+      Quit without saving
+    </a>
+  </div>
+</div>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  function magnify(imgID, resultID) {
-    const img = document.getElementById(imgID);
-    const result = document.getElementById(resultID);
+function magnify(imgID, resultID) {
+  const img = document.getElementById(imgID);
+  const result = document.getElementById(resultID);
 
-    // Remove any existing lens.
-    const oldLens = document.getElementById("lens");
-    if (oldLens) oldLens.remove();
+  // Remove any existing lens.
+  const oldLens = document.getElementById("lens");
+  if (oldLens) oldLens.remove();
 
-    // Create lens element.
-    const lens = document.createElement("div");
-    lens.id = "lens";
-    lens.className = "lens";
-    // Insert lens into the container of the image.
-    const container = img.parentElement;
-    container.insertBefore(lens, img);
+  // Create a new lens
+  const lens = document.createElement("div");
+  lens.id = "lens";
+  lens.className = "lens";
+  lens.style.position = "absolute";
+  lens.style.border = "2px solid red";
+  lens.style.width = "80px";
+  lens.style.height = "80px";
+  lens.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+  lens.style.zIndex = "100";
+  lens.style.cursor = "crosshair";
+  img.parentElement.insertBefore(lens, img);
 
-    let isLocked = false;
+  let isLocked = false;
 
-    // Toggle lock state on container click.
-    container.addEventListener("click", function(e) {
-      // Prevent mousemove from immediately resetting the lens after a click
-      e.stopPropagation();
-      isLocked = !isLocked;
-      if (isLocked) {
-        lens.style.border = "2px solid yellow";
-        lens.style.backgroundColor = "rgba(255, 255, 0, 0.5)";
-      } else {
-        lens.style.border = "2px solid red";
-        lens.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
-      }
-    });
+  // Toggle lock on click
+  img.parentElement.addEventListener("click", (e) => {
+    e.stopPropagation();
+    isLocked = !isLocked;
+    lens.style.border = isLocked ? "2px solid yellow" : "2px solid red";
+    lens.style.backgroundColor = isLocked ? "rgba(255,255,0,0.5)" : "rgba(255,0,0,0.2)";
+  });
 
-    // Calculate ratio using the offset (rendered) size of the image.
-    const cx = result.offsetWidth / lens.offsetWidth;
-    const cy = result.offsetHeight / lens.offsetHeight;
+  // Calculate ratio for background scaling
+  const cx = result.offsetWidth / lens.offsetWidth;
+  const cy = result.offsetHeight / lens.offsetHeight;
 
-    result.style.backgroundImage = "url('" + img.src + "')";
-    result.style.backgroundSize = (img.offsetWidth * cx) + "px " + (img.offsetHeight * cy) + "px";
+  result.style.backgroundImage = "url('" + img.src + "')";
+  result.style.backgroundSize = (img.clientWidth * cx) + "px " + (img.clientHeight * cy) + "px";
 
-    // Update lens position on mouse move.
-    img.addEventListener("mousemove", moveLens);
-    lens.addEventListener("mousemove", moveLens);
+  // Track mouse movement for the lens
+  img.addEventListener("mousemove", moveLens);
+  lens.addEventListener("mousemove", moveLens);
 
-    function moveLens(e) {
-      if (isLocked) return; // If locked, do not move the lens.
-      e.preventDefault();
-      const pos = getCursorPos(e);
-      let x = pos.x - (lens.offsetWidth / 2);
-      let y = pos.y - (lens.offsetHeight / 2);
+  function moveLens(e) {
+    if (isLocked) return; 
+    e.preventDefault();
+    const pos = getCursorPos(e);
+    let x = pos.x - (lens.offsetWidth / 2);
+    let y = pos.y - (lens.offsetHeight / 2);
 
-      // Constrain lens within the visible image boundaries.
-      if (x < 0) x = 0;
-      if (x > img.offsetWidth - lens.offsetWidth) x = img.offsetWidth - lens.offsetWidth;
-      if (y < 0) y = 0;
-      if (y > img.offsetHeight - lens.offsetHeight) y = img.offsetHeight - lens.offsetHeight;
+    // Constrain lens boundaries
+    if (x < 0) x = 0;
+    if (x > img.clientWidth - lens.offsetWidth) x = img.clientWidth - lens.offsetWidth;
+    if (y < 0) y = 0;
+    if (y > img.clientHeight - lens.offsetHeight) y = img.clientHeight - lens.offsetHeight;
 
-      lens.style.left = x + "px";
-      lens.style.top = y + "px";
+    lens.style.left = x + "px";
+    lens.style.top = y + "px";
+    result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
+  }
+  function getCursorPos(e) {
+    const rect = img.getBoundingClientRect();
+    const x = e.pageX - rect.left - window.pageXOffset;
+    const y = e.pageY - rect.top - window.pageYOffset;
+    return { x, y };
+  }
+}
 
-      // Update the zoomed background position.
-      result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
-    }
+window.addEventListener('DOMContentLoaded', () => {
+  const img = document.getElementById('original-image');
+  const result = document.getElementById('result');
 
-    function getCursorPos(e) {
-      const rect = img.getBoundingClientRect();
-      const x = e.pageX - rect.left - window.pageXOffset;
-      const y = e.pageY - rect.top - window.pageYOffset;
-      return { x, y };
-    }
+  function initMagnify() {
+    // match #result to the displayed size of #original-image
+    result.style.width = img.clientWidth + "px";
+    result.style.height = img.clientHeight + "px";
+    magnify("original-image", "result");
   }
 
-  // Initialize the magnifier.
-  magnify("original-image", "result");
+  if (img.complete) {
+    initMagnify();
+  } else {
+    img.addEventListener("load", initMagnify);
+  }
 });
 </script>
+
 {% endblock %}
