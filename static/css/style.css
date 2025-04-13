@@ -1,10 +1,27 @@
-/* Existing Global Styles */
+/* Ensure full page height and pinned footer */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
   background: #f8f9fa;
-  margin: 0;
-  padding: 0;
   color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Container can grow */
+.container {
+  flex: 1 0 auto;
+}
+
+/* Footer at the bottom */
+footer {
+  flex-shrink: 0;
 }
 
 /* Header and Navbar */
@@ -129,7 +146,7 @@ body {
   gap: 20px; /* Space between the original and zoom images */
 }
 
-/* Footer */
+/* Footer Appearance */
 footer, .footer {
   background-color: rgba(0, 0, 0, 0.05);
   padding: 1rem 0;
