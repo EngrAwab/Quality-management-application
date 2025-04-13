@@ -2,11 +2,6 @@
 {% block page_heading %}Robot &amp; Camera Interface{% endblock %}
 {% block content %}
 
-<!-- 
-  A fluid container with horizontal flex layout 
-  that never stacks, even on smaller screens. 
-  If narrower than total width, a horizontal scrollbar will appear. 
--->
 <div class="container-fluid my-4" 
      style="display: flex; 
             flex-direction: row; 
@@ -15,20 +10,18 @@
             white-space: nowrap; 
             overflow-x: auto;">
 
-  <!-- Left panel: text & controls -->
+  <!-- Left panel -->
   <div style="flex: 0 0 auto; width: 500px; padding: 0 20px;">
-    
-    <!-- Object's Name -->
+
+    <!-- Object name & file -->
     <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 1rem;">
       Object's Name: {{ object_name }}
     </div>
-    
-    <!-- Output Coordinate file: -->
     <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 2rem;">
       Output Coordinate file: {{ object_name }}
     </div>
-    
-    <!-- Communication lines with bullets on the right (twice as large) -->
+
+    <!-- Status bullets -->
     <div style="font-size: 1.2rem; margin-bottom: 0.75rem; display: flex; align-items: center;">
       Communication with the robot
       <span style="color:red; font-size:3.2rem; margin-left:0.5rem;">&#9679;</span>
@@ -37,48 +30,66 @@
       Communication with the camera
       <span style="color:green; font-size:3.2rem; margin-left:0.5rem;">&#9679;</span>
     </div>
-    
-    <!-- Analyze photo after photo with checkbox -->
-    <div style="font-size: 1.2rem; margin-bottom: 2rem;">
-      Analyse photo after photo
-      <input type="checkbox" class="form-check-input ms-2" style="transform: scale(1.2);" />
-    </div>
-    
-    <!-- Launch Robot button -->
+
+    <!-- Form wrapping checkbox + button -->
     <form method="POST" style="margin-bottom: 1.5rem;">
-      <button type="submit" 
-              style="
-                background-color: #007bff;
-                color: #fff;
-                border: none;
-                padding: 0.8rem 1.6rem;
-                font-size: 1.2rem;
-                border-radius: 8px;
-                cursor: pointer;
-              ">
+      <div style="font-size: 1.2rem; margin-bottom: 1rem;">
+        Analyse photo after photo
+        <input
+          type="checkbox"
+          id="analyseCheckbox"
+          name="analyseCheckbox"
+          class="form-check-input ms-2"
+          style="transform: scale(1.2);"
+        />
+      </div>
+
+      <button
+        type="submit"
+        id="launchBtn"
+        disabled
+        style="
+          background-color: #007bff;
+          color: #fff;
+          border: none;
+          padding: 0.8rem 1.6rem;
+          font-size: 1.2rem;
+          border-radius: 8px;
+          cursor: pointer;
+        "
+      >
         Launch Robot
       </button>
     </form>
 
-    <!-- Standard Bootstrap progress bar WITHOUT the "50%" text -->
+    <!-- Progress bar -->
     <div class="progress" style="width: 80%; height: 25px;">
       <div class="progress-bar progress-bar-striped progress-bar-animated" 
            role="progressbar" style="width:50%;" 
            aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
-        <!-- Text removed here -->
       </div>
     </div>
 
   </div><!-- end left panel -->
 
-  <!-- Right panel: image (removed the margin-top so it's aligned) -->
+  <!-- Right panel: image -->
   <div style="flex: 0 0 auto; width: 500px; text-align:center; padding: 0 20px;">
     <img src="{{ url_for('static', filename='images/sample.jpg') }}"
          alt="Robot &amp; Camera Interface"
-         style="max-width: 300px; 
-                border: 2px solid #ccc; 
-                border-radius: 5px;">
+         style="max-width: 300px; border: 2px solid #ccc; border-radius: 5px;">
   </div>
 
 </div>
+
+<!-- toggle button enable/disable -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('analyseCheckbox');
+    const launchBtn = document.getElementById('launchBtn');
+    checkbox.addEventListener('change', () => {
+      launchBtn.disabled = !checkbox.checked;
+    });
+  });
+</script>
+
 {% endblock %}
