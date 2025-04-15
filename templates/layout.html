@@ -24,30 +24,35 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-  <!-- Three.js Background Canvas (Graphics-Heavy Visuals) -->
+  <!-- Three.js Background Canvas (Enhanced: Multiple Rotating & Pulsating Cubes) -->
   <canvas id="three-background" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3; pointer-events: none;"></canvas>
   
-  <!-- Particle.js Background (Secondary effect) -->
+  <!-- Particle.js Background (Subtle Circular Particles) -->
   <div id="particles-js" style="position: fixed; width: 100%; height: 100%; z-index: -2;"></div>
 
-  <!-- Header (Navbar) -->
-  <nav class="navbar animate__animated animate__fadeIn" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+  <!-- Header (Navbar) with Updated Professional Dark-Blue Gradient -->
+  <nav class="navbar animate__animated animate__fadeIn" style="background: linear-gradient(135deg, #0f0f4a, #0a0a2a);">
     <div class="container d-flex align-items-center justify-content-start">
       <!-- Home Icon Link -->
       <a class="navbar-brand text-white fw-bold" href="{{ url_for('index') }}">
-        <i class="bi bi-house-fill" style="font-size: 1.75rem;"></i>
+        <i class="bi bi-building" style="font-size: 1.75rem;"></i>
       </a>
       <!-- Centered Page Heading -->
       <div class="mx-auto text-center flex-grow-1">
         <span class="fs-4 text-white fw-bold">
-          {% block page_heading %}Welcome{% endblock %}
+          {% block page_heading %}Quality Management Application{% endblock %}
         </span>
       </div>
     </div>
   </nav>
-  <!-- End Header -->
+  
+  <!-- Animated Header Banner (Slide-In Effect) -->
+  <div id="header-banner" class="animate__animated animate__slideInDown" 
+       style="text-align: center; padding: 10px 0; background: rgba(15, 15, 74, 0.95); color: #00ccff; font-size: 1.25rem;">
+    Excellence in Quality &amp; Innovation
+  </div>
 
-  <!-- Main area takes up remaining vertical space so the footer is at the bottom -->
+  <!-- Main area (content area) -->
   <main class="flex-grow-1">
     <!-- Flash Messages -->
     <div class="container mt-4">
@@ -67,7 +72,7 @@
     </div>
   </main>
 
-  <!-- Footer (pinned at the bottom) -->
+  <!-- Footer (Pinned at the Bottom) -->
   <footer class="text-center py-4">
     <p class="text-muted mb-0">&copy; 2025 Quality Management Application</p>
   </footer>
@@ -83,18 +88,18 @@
   <script>
     AOS.init();
   </script>
-  <!-- Particle.js Library -->
+  <!-- Particle.js Library (Neutral, Minimal Particles) -->
   <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
   <script>
     particlesJS("particles-js", {
       "particles": {
-          "number": { "value": 50, "density": { "enable": true, "value_area": 800 } },
-          "color": { "value": "#cccccc" },
+          "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+          "color": { "value": "#aaaaaa" },
           "shape": { "type": "circle" },
-          "opacity": { "value": 0.5 },
+          "opacity": { "value": 0.4 },
           "size": { "value": 3 },
-          "line_linked": { "enable": true, "distance": 150, "color": "#cccccc", "opacity": 0.4, "width": 1 },
-          "move": { "enable": true, "speed": 2 }
+          "line_linked": { "enable": true, "distance": 150, "color": "#aaaaaa", "opacity": 0.3, "width": 1 },
+          "move": { "enable": true, "speed": 1.5 }
       },
       "interactivity": {
           "detect_on": "canvas",
@@ -110,43 +115,67 @@
       "retina_detect": true
     });
   </script>
-  <!-- Three.js Heavy Graphics Script -->
+  <!-- Three.js Heavy Graphics Script: Multiple Rotating & Pulsating Cubes -->
   <script>
-    // Three.js Scene Setup for an interactive, heavy background
-    let scene, camera, renderer, cube;
+    let scene, camera, renderer, cubes = [];
+    const cubeCount = 100;  // Increased cube density for a stronger effect
+
     function initThreeJS() {
       scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-      renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-background'), alpha: true });
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({
+        canvas: document.getElementById('three-background'),
+        alpha: true
+      });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      
-      // Create a rotating cube
-      const geometry = new THREE.BoxGeometry(2, 2, 2);
-      const material = new THREE.MeshStandardMaterial({ color: 0xff0051, roughness: 0.5, metalness: 0.3 });
-      cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-      
-      // Add ambient and directional lights
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+
+      // Create multiple small cubes in a professional blue tone
+      for (let i = 0; i < cubeCount; i++) {
+        const cubeSize = Math.random() * 0.5 + 0.2;
+        const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+        const material = new THREE.MeshStandardMaterial({ color: 0x00aaff, roughness: 0.5, metalness: 0.3 });
+        const cube = new THREE.Mesh(geometry, material);
+        cube.position.x = (Math.random() - 0.5) * 30;
+        cube.position.y = (Math.random() - 0.5) * 30;
+        cube.position.z = (Math.random() - 0.5) * 30;
+        // Initialize rotation randomly
+        cube.rotation.x = Math.random() * Math.PI;
+        cube.rotation.y = Math.random() * Math.PI;
+        cubes.push(cube);
+        scene.add(cube);
+      }
+
+      // Add ambient and directional lights for depth
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
       scene.add(ambientLight);
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(5, 5, 5);
+      directionalLight.position.set(5, 10, 7.5);
       scene.add(directionalLight);
-      
-      camera.position.z = 5;
+
+      camera.position.z = 40;
       animateThreeJS();
     }
+
     function animateThreeJS() {
       requestAnimationFrame(animateThreeJS);
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
+      const time = Date.now() * 0.001;
+      cubes.forEach(cube => {
+        // Slowly rotate cubes
+        cube.rotation.x += 0.005;
+        cube.rotation.y += 0.005;
+        // Add slight pulsating scale effect
+        const scaleFactor = 1 + 0.05 * Math.sin(time + cube.position.x);
+        cube.scale.set(scaleFactor, scaleFactor, scaleFactor);
+      });
       renderer.render(scene, camera);
     }
+
     window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
     document.addEventListener("DOMContentLoaded", initThreeJS);
   </script>
 </body>

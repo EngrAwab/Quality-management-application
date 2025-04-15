@@ -5,25 +5,38 @@ html, body {
   padding: 0;
 }
 
-/* Dark animated gradient background for the body */
+/* Dark animated gradient background with subtle noise overlay */
 body {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(-45deg, #1a1a1a, #333333, #1a1a1a, #000000);
   background-size: 400% 400%;
   animation: gradientAnimation 15s ease infinite;
-  /* Changed text color to bright light blue */
-  color: #00ccff;
+  color: #00ccff;  /* Neon light blue for main text */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* Enhance readability with text shadow */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  /* Text shadow for extra contrast */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 @keyframes gradientAnimation {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Noise overlay using a pseudo-element for texture */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAACRXR/mAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAI9JREFUWIXtmzENwjAMRVOigP//RkZS6SFS0tw9Mscb7JtKAf2Z0eCcuItaBmz46dn0zXuQLlu1OCrAfAG0mwkTEg1A9h25Nndh/um7xCK+j4oHeEvw5wd4S/CnB3hL8KcHeEvw5wd4S/CnB3hL8KcHeEvw5wd6Q/RDtaPii75PcyC1w80AAGw7PqKh+EDAAwCOK6AUAAgChPoIUAAgChPoIUAAgChPoIUAAgChPoj1exqfxAPQAvPeZx/MAz54AAAAASUVORK5CYII=') repeat;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Container can grow */
@@ -36,12 +49,13 @@ footer {
   flex-shrink: 0;
 }
 
-/* Header and Navbar */
+/* Header and Navbar with neon underline effect */
 .navbar {
   padding: 1rem 1.5rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.8);
   animation: slideDown 0.7s ease-out;
   background: linear-gradient(135deg, #1a1a1a, #333);
+  position: relative;
 }
 
 @keyframes slideDown {
@@ -51,8 +65,26 @@ footer {
 
 .navbar-brand {
   font-size: 1.75rem;
-  color: #ffffff; /* Navbar title remains white for contrast */
+  color: #ffffff; /* Keep the brand title white for strong contrast */
+  position: relative;
+  overflow: hidden;
   transition: color 0.2s ease;
+}
+
+.navbar-brand::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 3px;
+  background: #00ccff;
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.navbar-brand:hover::after {
+  transform: translateX(0);
 }
 
 .navbar-brand:hover {
@@ -64,36 +96,45 @@ footer {
   padding: 40px 15px;
 }
 
-/* Card Styling */
+/* Custom Card Styling with glowing border */
 .custom-card {
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.9);
   background-color: #222;
+  border: 2px solid transparent;
+  animation: neonBorder 2s infinite alternate;
 }
 
-/* Card Headers */
+@keyframes neonBorder {
+  from {
+    border-color: rgba(0, 204, 255, 0.5);
+  }
+  to {
+    border-color: rgba(0, 204, 255, 1);
+  }
+}
+
+/* Card Headers with text glow */
 .card-header {
   padding: 1rem;
   background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #ffffff; /* Keep header text white */
+  color: #ffffff;
   font-weight: 600;
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 0 8px rgba(0, 204, 255, 0.8);
 }
 
 /* Card Body */
 .card-body {
   padding: 1.5rem;
   text-align: center;
-  /* Changed to the new text color */
   color: #00ccff;
 }
 
-/* Form Controls */
+/* Form Controls with neon borders */
 .form-label {
   font-weight: 600;
-  /* Changed form label text color */
   color: #00ccff;
 }
 
@@ -103,10 +144,18 @@ footer {
   border-radius: 5px;
   border: 1px solid #444;
   background-color: #333;
-  color: #00ccff; /* Change input text color */
+  color: #00ccff;
+  padding: 0.5rem 0.75rem;
+  transition: border-color 0.3s ease;
 }
 
-/* Buttons */
+.form-select:focus,
+.form-control:focus {
+  border-color: #00ccff;
+  outline: none;
+}
+
+/* Neon Buttons with animated glow */
 .btn-custom {
   font-size: 1.2rem;
   padding: 0.75rem 1.5rem;
@@ -117,20 +166,38 @@ footer {
   color: #ffffff;
   width: 100%;
   max-width: 250px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-custom::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(0, 204, 255, 0.6), transparent);
+  transition: all 650ms ease;
+}
+
+.btn-custom:hover::before {
+  left: 100%;
 }
 
 .btn-custom:hover {
   background-color: #5a67d8;
   transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.5);
 }
 
 .btn-custom:active {
   transform: scale(0.98);
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 3px 5px rgba(0,0,0,0.5);
 }
 
-/* Button Row Fix */
+/* Button Row */
 .button-row {
   display: flex;
   justify-content: space-between;
@@ -143,7 +210,7 @@ footer {
   flex: 1 1 auto;
 }
 
-/* Lens Styling */
+/* Lens Styling with subtle neon glow */
 .lens {
   position: absolute;
   border: 2px solid red;
@@ -154,11 +221,11 @@ footer {
   pointer-events: auto;
   z-index: 100;
   transition: all 0.2s ease;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 10px rgba(0,0,0,0.7);
 }
 
 .lens:hover {
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 15px rgba(0,0,0,0.9);
 }
 
 /* Zoom Result Styling */
@@ -168,10 +235,10 @@ footer {
   height: 300px;
   background-repeat: no-repeat;
   margin: 0 auto;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.7);
 }
 
-/* Image Container for Flex Layout */
+/* Image Container */
 .image-con {
   display: flex;
   align-items: flex-start;
