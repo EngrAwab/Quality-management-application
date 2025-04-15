@@ -276,3 +276,12 @@ footer, .footer {
   transform: scale(1.03);
   transition: transform 0.3s ease;
 }
+
+/* --- Added Hover Effect for All Buttons --- */
+button:hover, .btn:hover {
+  background-color: #8c9dff;
+}
+
+button, .btn {
+  transition: background-color 0.3s ease;
+}
