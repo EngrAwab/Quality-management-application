@@ -1,16 +1,10 @@
 {% extends "layout.html" %}
 {% block page_heading %}New Object{% endblock %}
 {% block content %}
-
-<!-- Center the card so that it fills most of the viewport 
-     with minimal space between header and footer -->
-<div class="d-flex flex-column justify-content-center align-items-center" 
-     style="min-height: calc(100vh - 180px);">
-  <!-- A large card that covers most of the page -->
-  <div class="card w-75" style="height: 80%;">
+<div class="d-flex flex-column justify-content-center align-items-center" style="min-height: calc(100vh - 180px);">
+  <div class="card w-75 animate__animated animate__zoomIn" style="height: 80%;">
     <div class="card-body d-flex flex-column justify-content-start align-items-center">
       
-      <!-- Big text field for "New Object's Name:" -->
       <div class="mb-4" style="margin-top: 2rem; font-size: 24px;">
         <label for="object_name" class="fw-bold me-2">New Object's Name:</label>
         <input type="text" id="object_name" name="object_name" 
@@ -19,16 +13,13 @@
                placeholder="Enter object name"/>
       </div>
 
-      <!-- A thin horizontal line for visual separation -->
       <hr style="width: 80%; margin: 1rem auto;" />
 
-      <!-- First big button: Upload the Coordinates file -->
       <button id="upload-coords-btn" class="btn btn-primary mb-4" 
               style="font-size:24px; width: 320px;">
         Upload the Coordinates File
       </button>
 
-      <!-- Second big button: Analyze a previous object -->
       <button id="analyze-previous-btn" class="btn btn-secondary" 
               style="font-size:24px; width: 320px;">
         Analyze a Previous Object
@@ -37,13 +28,9 @@
   </div>
 </div>
 
-<!-- Hidden file input (only .xlsx) for coordinates -->
 <input type="file" id="coords-file-input" accept=".xlsx" style="display:none;" />
 
 <script>
-  // When "Upload the Coordinates File" is clicked:
-  // 1) Check if user has entered New Object's Name.
-  // 2) If yes, open file dialog for .xlsx.
   document.getElementById('upload-coords-btn').addEventListener('click', function() {
     const objName = document.getElementById('object_name').value.trim();
     if (!objName) {
@@ -52,30 +39,23 @@
     }
     document.getElementById('coords-file-input').click();
   });
-
-  // After selecting the file, automatically upload it if valid
   document.getElementById('coords-file-input').addEventListener('change', function(e) {
     const file = e.target.files[0];
-    if (!file) return; // user canceled file dialog
-
+    if (!file) return;
     if (!file.name.toLowerCase().endsWith('.xlsx')) {
       alert('Please select a valid .xlsx file.');
       e.target.value = '';
       return;
     }
-
     const objName = document.getElementById('object_name').value.trim();
     if (!objName) {
       alert('Please enter a new object name first.');
       e.target.value = '';
       return;
     }
-
-    // Use fetch() to POST the file and object name to /upload_coords
     const formData = new FormData();
     formData.append('object_name', objName);
     formData.append('coords_file', file);
-
     fetch('{{ url_for("upload_coords") }}', {
       method: 'POST',
       body: formData
@@ -83,7 +63,6 @@
     .then(resp => resp.json())
     .then(data => {
       if (data.status === 'success') {
-        // If valid, redirect to the second page
         window.location.href = data.redirect;
       } else {
         alert(data.message);
@@ -94,8 +73,6 @@
       alert('An error occurred while uploading the file.');
     });
   });
-
-  // "Analyze a Previous Object" - not yet implemented
   document.getElementById('analyze-previous-btn').addEventListener('click', function() {
     alert('Not implemented yet.');
   });

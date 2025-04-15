@@ -5,13 +5,25 @@ html, body {
   padding: 0;
 }
 
+/* Dark animated gradient background for the body */
 body {
   font-family: 'Poppins', sans-serif;
-  background: #f8f9fa;
-  color: #333;
+  background: linear-gradient(-45deg, #1a1a1a, #333333, #1a1a1a, #000000);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+  /* Changed text color to bright light blue */
+  color: #00ccff;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  /* Enhance readability with text shadow */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Container can grow */
@@ -27,12 +39,19 @@ footer {
 /* Header and Navbar */
 .navbar {
   padding: 1rem 1.5rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  animation: slideDown 0.7s ease-out;
+  background: linear-gradient(135deg, #1a1a1a, #333);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .navbar-brand {
   font-size: 1.75rem;
-  color: #ffffff;
+  color: #ffffff; /* Navbar title remains white for contrast */
   transition: color 0.2s ease;
 }
 
@@ -49,36 +68,42 @@ footer {
 .custom-card {
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  background-color: #222;
 }
 
 /* Card Headers */
 .card-header {
   padding: 1rem;
   background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
+  color: #ffffff; /* Keep header text white */
   font-weight: 600;
   text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 /* Card Body */
 .card-body {
   padding: 1.5rem;
   text-align: center;
+  /* Changed to the new text color */
+  color: #00ccff;
 }
 
 /* Form Controls */
 .form-label {
   font-weight: 600;
-  color: #555;
+  /* Changed form label text color */
+  color: #00ccff;
 }
 
 .form-select,
 .form-range,
 .form-control {
   border-radius: 5px;
-  border: 1px solid #ced4da;
+  border: 1px solid #444;
+  background-color: #333;
+  color: #00ccff; /* Change input text color */
 }
 
 /* Buttons */
@@ -86,21 +111,23 @@ footer {
   font-size: 1.2rem;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
   background-color: #667eea;
-  color: #fff;
+  color: #ffffff;
   width: 100%;
   max-width: 250px;
 }
 
 .btn-custom:hover {
   background-color: #5a67d8;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
 }
 
 .btn-custom:active {
   transform: scale(0.98);
-  box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
 }
 
 /* Button Row Fix */
@@ -127,31 +154,36 @@ footer {
   pointer-events: auto;
   z-index: 100;
   transition: all 0.2s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+}
+
+.lens:hover {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
 }
 
 /* Zoom Result Styling */
 .img-zoom-result {
-  border: 2px solid #ccc;
+  border: 2px solid #444;
   width: 300px;
   height: 300px;
   background-repeat: no-repeat;
   margin: 0 auto;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
 /* Image Container for Flex Layout */
 .image-con {
   display: flex;
   align-items: flex-start;
-  gap: 20px; /* Space between the original and zoom images */
+  gap: 20px;
 }
 
 /* Footer Appearance */
 footer, .footer {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.8);
   padding: 1rem 0;
   font-size: 0.9rem;
-  color: #666;
+  color: #aaa;
 }
 
 /* Responsive adjustments */
@@ -160,17 +192,20 @@ footer, .footer {
     flex-direction: column;
     align-items: center;
   }
-
   .img-zoom-result {
     margin-top: 20px;
   }
-
   .button-row {
     flex-direction: column;
     align-items: stretch;
   }
-
   .button-row .btn-custom {
     max-width: 100%;
   }
+}
+
+/* Additional hover effect for images */
+#original-image:hover {
+  transform: scale(1.03);
+  transition: transform 0.3s ease;
 }

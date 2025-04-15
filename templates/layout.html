@@ -11,64 +11,143 @@
     crossorigin="anonymous">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <!-- Animate.css for animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <!-- AOS for on-scroll animations -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Three.js Library for heavy graphics -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-<!-- Header (Navbar) -->
-<nav class="navbar" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-  <div class="container d-flex align-items-center justify-content-start">
-    <!-- Home Icon Link -->
-    <a class="navbar-brand text-white fw-bold" href="{{ url_for('index') }}">
-      <i class="bi bi-house-fill" style="font-size: 1.75rem;"></i>
-    </a>
-    <!-- Centered Page Heading -->
-    <div class="mx-auto text-center flex-grow-1">
-      <span class="fs-4 text-white fw-bold">
-        {% block page_heading %}Welcome{% endblock %}
-      </span>
+  <!-- Three.js Background Canvas (Graphics-Heavy Visuals) -->
+  <canvas id="three-background" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3; pointer-events: none;"></canvas>
+  
+  <!-- Particle.js Background (Secondary effect) -->
+  <div id="particles-js" style="position: fixed; width: 100%; height: 100%; z-index: -2;"></div>
+
+  <!-- Header (Navbar) -->
+  <nav class="navbar animate__animated animate__fadeIn" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+    <div class="container d-flex align-items-center justify-content-start">
+      <!-- Home Icon Link -->
+      <a class="navbar-brand text-white fw-bold" href="{{ url_for('index') }}">
+        <i class="bi bi-house-fill" style="font-size: 1.75rem;"></i>
+      </a>
+      <!-- Centered Page Heading -->
+      <div class="mx-auto text-center flex-grow-1">
+        <span class="fs-4 text-white fw-bold">
+          {% block page_heading %}Welcome{% endblock %}
+        </span>
+      </div>
     </div>
-  </div>
-</nav>
-<!-- End Header -->
+  </nav>
+  <!-- End Header -->
 
-<!-- Main area takes up remaining vertical space so the footer is at the bottom -->
-<main class="flex-grow-1">
+  <!-- Main area takes up remaining vertical space so the footer is at the bottom -->
+  <main class="flex-grow-1">
+    <!-- Flash Messages -->
+    <div class="container mt-4">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert alert-info" role="alert">
+            {% for message in messages %}
+              <div>{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+    <!-- Page-Specific Content -->
+    <div class="container mb-4">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
 
-  <!-- Flash Messages -->
-  <div class="container mt-4">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="alert alert-info" role="alert">
-          {% for message in messages %}
-            <div>{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-  </div>
+  <!-- Footer (pinned at the bottom) -->
+  <footer class="text-center py-4">
+    <p class="text-muted mb-0">&copy; 2025 Quality Management Application</p>
+  </footer>
 
-  <!-- Page-Specific Content -->
-  <div class="container mb-4">
-    {% block content %}{% endblock %}
-  </div>
-
-</main>
-
-<!-- Footer (now truly pinned at the bottom) -->
-<footer class="text-center py-4">
-  <p class="text-muted mb-0">&copy; 2025 Quality Management Application</p>
-</footer>
-
-<!-- Bootstrap JS Bundle -->
-<script 
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
-  integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+5q0eD2K05M1yp7K3y" 
-  crossorigin="anonymous">
-</script>
-
+  <!-- Bootstrap JS Bundle -->
+  <script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+5q0eD2K05M1yp7K3y" 
+    crossorigin="anonymous">
+  </script>
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+  <!-- Particle.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+          "number": { "value": 50, "density": { "enable": true, "value_area": 800 } },
+          "color": { "value": "#cccccc" },
+          "shape": { "type": "circle" },
+          "opacity": { "value": 0.5 },
+          "size": { "value": 3 },
+          "line_linked": { "enable": true, "distance": 150, "color": "#cccccc", "opacity": 0.4, "width": 1 },
+          "move": { "enable": true, "speed": 2 }
+      },
+      "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+              "onhover": { "enable": true, "mode": "grab" },
+              "onclick": { "enable": true, "mode": "push" }
+          },
+          "modes": {
+              "grab": { "distance": 140 },
+              "push": { "particles_nb": 4 }
+          }
+      },
+      "retina_detect": true
+    });
+  </script>
+  <!-- Three.js Heavy Graphics Script -->
+  <script>
+    // Three.js Scene Setup for an interactive, heavy background
+    let scene, camera, renderer, cube;
+    function initThreeJS() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-background'), alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      
+      // Create a rotating cube
+      const geometry = new THREE.BoxGeometry(2, 2, 2);
+      const material = new THREE.MeshStandardMaterial({ color: 0xff0051, roughness: 0.5, metalness: 0.3 });
+      cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+      
+      // Add ambient and directional lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(5, 5, 5);
+      scene.add(directionalLight);
+      
+      camera.position.z = 5;
+      animateThreeJS();
+    }
+    function animateThreeJS() {
+      requestAnimationFrame(animateThreeJS);
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    document.addEventListener("DOMContentLoaded", initThreeJS);
+  </script>
 </body>
 </html>

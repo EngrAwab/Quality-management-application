@@ -1,18 +1,16 @@
 {% extends "layout.html" %}
 {% block page_heading %}Image Analysis{% endblock %}
 {% block content %}
-
 <style>
   /* Main row: Left card (Original + Altitude + Angle) & right card (Zoomed + Sliders) */
   .image-row {
     display: flex;
     flex-wrap: wrap;
     gap: 3rem;
-    justify-content: center; /* center horizontally */
+    justify-content: center;
     align-items: flex-start;
-    margin-bottom: 2rem; /* space below cards */
+    margin-bottom: 2rem;
   }
-
   .image-card {
     border: 2px solid #ccc;
     border-radius: 5px;
@@ -20,7 +18,6 @@
     text-align: center;
     flex: 0 0 auto;
   }
-
   /* Original Image */
   #original-image {
     border: 2px solid #ccc;
@@ -29,20 +26,17 @@
     max-width: 240px;
     height: auto;
   }
-
   /* Zoomed Image Container */
   #result {
     border: 2px solid #ccc;
     background-repeat: no-repeat;
     margin-bottom: 1rem;
   }
-
   /* Lens styling */
   .lens {
     opacity: 0.6;
     transition: all 0.2s ease;
   }
-
   /* Original image + altitude horizontally side-by-side */
   .orig-alt-container {
     display: flex;
@@ -51,7 +45,6 @@
     align-items: flex-start;
     justify-content: center;
   }
-
   /* Altitude mini-card */
   .altitude-controls {
     border: 1px solid #ccc;
@@ -60,7 +53,6 @@
     background-color: #fff;
     min-width: 120px;
   }
-
   /* Angle controls below the original image card */
   .angle-controls {
     border: 1px solid #ccc;
@@ -71,7 +63,6 @@
     text-align: center;
     display: inline-block;
   }
-
   /* Luminosity & Contrast controls under the zoomed image */
   .lum-contrast-controls {
     margin-top: 1rem;
@@ -101,35 +92,19 @@
     width: 60px;
     text-align: center;
   }
-
-  /* Highlight the selected altitude/angle option */
-  /*.btn-check:checked + .btn.btn-outline-primary {
-    background-color: #0d6efd;
-    color: #fff;
-    border-color: #0d6efd;
-  } */
-
-  /* 
-    A row underneath the cards, with two columns:
-    - Left column: 3 stacked analysis buttons (Manual, Automatic, AI)
-    - Right column: 2 stacked quit buttons (Quit & Save, Quit without saving)
-  */
+  /* Buttons Row */
   .buttons-row {
     display: flex;
-    flex-wrap: wrap;      /* if narrow, can wrap to a new line */
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 6rem;            /* horizontal space between left stack & right stack */
-    margin-bottom: 2rem;  /* spacing below */
+    gap: 6rem;
+    margin-bottom: 2rem;
   }
-
-  /* Each column is a vertical stack of buttons */
   .buttons-col {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
-
-  /* Big blue button styling (common to both analysis + quit) */
   .big-button {
     background-color: #007bff;
     color: #fff;
@@ -140,7 +115,7 @@
     text-align: center;
     min-width: 180px;
     cursor: pointer;
-    text-decoration: none; /* remove underline if anchor */
+    text-decoration: none;
   }
   .big-button:hover {
     background-color: #0069d9;
@@ -148,7 +123,7 @@
 </style>
 
 <!-- MAIN ROW: left (Original + Altitude + Angle) & right (Zoomed + Sliders) -->
-<div class="image-row">
+<div class="image-row animate__animated animate__fadeIn" data-aos="fade-up" data-aos-duration="1000">
   <!-- LEFT Card: Original Image + Altitude + Angle -->
   <div class="image-card">
     <h5>Original Image + Altitude</h5>
@@ -220,27 +195,22 @@
   </div>
 </div>
 
-<!-- 
-  A single row with two columns: 
-  Left column => 3 stacked analysis buttons 
-  Right column => 2 stacked quit buttons
-  All are pushed to the right side, outside the cards.
--->
+<!-- Buttons Row: Analysis and Quit -->
 <div class="buttons-row">
   <!-- Left Column: 3 stacked analysis buttons -->
   <div class="buttons-col">
     <form method="POST">
-      <button type="submit" name="analysis_type" value="Manual" class="big-button">
+      <button type="submit" name="analysis_type" value="Manual" class="big-button animate__animated animate__pulse">
         Manual analysis
       </button>
     </form>
     <form method="POST">
-      <button type="submit" name="analysis_type" value="Automatic" class="big-button">
+      <button type="submit" name="analysis_type" value="Automatic" class="big-button animate__animated animate__pulse">
         Automatic analysis
       </button>
     </form>
     <form method="POST">
-      <button type="submit" name="analysis_type" value="AI" class="big-button">
+      <button type="submit" name="analysis_type" value="AI" class="big-button animate__animated animate__pulse">
         AI analysis
       </button>
     </form>
@@ -329,7 +299,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const result = document.getElementById('result');
 
   function initMagnify() {
-    // match #result to the displayed size of #original-image
     result.style.width = img.clientWidth + "px";
     result.style.height = img.clientHeight + "px";
     magnify("original-image", "result");
