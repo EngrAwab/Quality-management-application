@@ -1,29 +1,88 @@
 {% extends "layout.html" %}
 {% block page_heading %}New Object{% endblock %}
 {% block content %}
-<div class="d-flex flex-column justify-content-center align-items-center" style="min-height: calc(100vh - 180px);">
-  <div class="card w-75 animate__animated animate__zoomIn" style="height: 80%;">
+<!-- Custom styling for a polished, professional look -->
+<style>
+  /* Overall container for the new object section */
+  .new-object-container {
+      min-height: calc(100vh - 180px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.05);
+  }
+  /* Enhanced card styling */
+  .new-object-card {
+      width: 75%;
+      max-width: 800px;
+      border: none;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      padding: 2rem;
+      color: #fff;
+  }
+  .new-object-card label {
+      font-size: 1.5rem;
+  }
+  .new-object-card input.form-control {
+      font-size: 1.5rem;
+      width: 400px;
+      border-radius: 8px;
+      border: 2px solid #007bff;
+      padding: 0.5rem 1rem;
+      background: #f8f9fa;
+      color: #333;
+      transition: all 0.3s ease;
+  }
+  .new-object-card input.form-control:focus {
+      border-color: #0056b3;
+      box-shadow: 0 0 10px rgba(0,123,255,0.5);
+  }
+  .new-object-card hr {
+      border-top: 2px solid rgba(255, 255, 255, 0.3);
+      width: 80%;
+      margin: 1rem auto;
+  }
+  /* Button styling */
+  .new-object-card button {
+      font-size: 1.5rem;
+      width: 320px;
+      border-radius: 10px;
+      padding: 0.75rem;
+      transition: all 0.3s ease;
+      border: none;
+  }
+  .new-object-card button.btn-primary {
+      background-color: #007bff;
+  }
+  .new-object-card button.btn-primary:hover {
+      background-color: #0056b3;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,123,255,0.6);
+  }
+  .new-object-card button.btn-secondary {
+      background-color: #6c757d;
+  }
+  .new-object-card button.btn-secondary:hover {
+      background-color: #5a6268;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(108,117,125,0.6);
+  }
+</style>
+
+<div class="new-object-container">
+  <div class="card new-object-card animate__animated animate__zoomIn">
     <div class="card-body d-flex flex-column justify-content-start align-items-center">
-      
-      <div class="mb-4" style="margin-top: 2rem; font-size: 24px;">
+      <div class="mb-4">
         <label for="object_name" class="fw-bold me-2">New Object's Name:</label>
-        <input type="text" id="object_name" name="object_name" 
-               class="form-control d-inline-block" 
-               style="font-size:24px; width: 400px;" 
-               placeholder="Enter object name"/>
+        <input type="text" id="object_name" name="object_name" class="form-control d-inline-block" placeholder="Enter object name"/>
       </div>
-
-      <hr style="width: 80%; margin: 1rem auto;" />
-
-      <button id="upload-coords-btn" class="btn btn-primary mb-4" 
-              style="font-size:24px; width: 320px;">
-        Upload the Coordinates File
-      </button>
-
-      <button id="analyze-previous-btn" class="btn btn-secondary" 
-              style="font-size:24px; width: 320px;">
-        Analyze a Previous Object
-      </button>
+      <hr />
+      <button id="upload-coords-btn" class="btn btn-primary mb-4">Upload the Coordinates File</button>
+      <button id="analyze-previous-btn" class="btn btn-secondary">Analyze a Previous Object</button>
     </div>
   </div>
 </div>

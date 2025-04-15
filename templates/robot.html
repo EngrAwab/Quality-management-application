@@ -1,40 +1,154 @@
 {% extends "layout.html" %}
 {% block page_heading %}Robot &amp; Camera Interface{% endblock %}
 {% block content %}
-<div class="container-fluid my-4" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; white-space: nowrap; overflow-x: auto;">
-  <!-- Left panel -->
-  <div style="flex: 0 0 auto; width: 500px; padding: 0 20px;">
-    <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 1rem;">
-      Object's Name: {{ object_name }}
+<style>
+  /* Container for the robot interface using a responsive two-column layout */
+  .robot-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 2rem auto;
+    max-width: 1200px;
+  }
+  /* Glassmorphism style for panels */
+  .panel {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    color: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Panel Heading */
+  .panel h5 {
+    color: #00ccff;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  /* Object Details styling */
+  .object-details {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+  /* Status indicators */
+  .status {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+  }
+  .status span {
+    margin-left: 0.5rem;
+    font-size: 2.8rem;
+  }
+  /* Form Styling */
+  .panel form {
+    margin-bottom: 1.5rem;
+  }
+  .checkbox-group {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  /* Button Styling */
+  .panel button {
+    font-size: 1.2rem;
+    width: 100%;
+    max-width: 300px;
+    border-radius: 8px;
+    padding: 0.8rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  .panel button.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+  }
+  .panel button.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.6);
+  }
+  .panel button.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+  }
+  .panel button.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(108, 117, 125, 0.6);
+  }
+  /* Progress Bar Styling */
+  .progress {
+    height: 25px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+  .progress-bar {
+    font-size: 1rem;
+  }
+  /* Right Panel: Camera Image Styling */
+  .panel.image-panel {
+    text-align: center;
+  }
+  .panel.image-panel img {
+    /* Resize the image so that it never exceeds 400px in height */
+    max-height: 400px;
+    width: auto;
+    object-fit: contain;
+    border: 2px solid #444;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+    display: block;
+    margin: 0 auto;
+  }
+  .panel.image-panel img:hover {
+    transform: scale(1.03);
+  }
+</style>
+
+<div class="robot-container">
+  <!-- Left Panel: Interface Details and Controls -->
+  <div class="panel">
+    <h5>Interface Details</h5>
+    <div class="object-details">
+      <strong>Object's Name:</strong> {{ object_name }}
     </div>
-    <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 2rem;">
-      Output Coordinate file: {{ object_name }}
+    <div class="object-details">
+      <strong>Output Coordinate file:</strong> {{ object_name }}
     </div>
-    <div style="font-size: 1.2rem; margin-bottom: 0.75rem; display: flex; align-items: center;">
-      Communication with the robot
-      <span style="color:red; font-size:3.2rem; margin-left:0.5rem;">&#9679;</span>
+    <div class="status">
+      Communication with the robot:
+      <span style="color: red;">&#9679;</span>
     </div>
-    <div style="font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center;">
-      Communication with the camera
-      <span style="color:green; font-size:3.2rem; margin-left:0.5rem;">&#9679;</span>
+    <div class="status">
+      Communication with the camera:
+      <span style="color: green;">&#9679;</span>
     </div>
-    <form method="POST" style="margin-bottom: 1.5rem;">
-      <div style="font-size: 1.2rem; margin-bottom: 1rem;">
+    <form method="POST">
+      <div class="checkbox-group">
         Analyse photo after photo
         <input type="checkbox" id="analyseCheckbox" name="analyseCheckbox" class="form-check-input ms-2" style="transform: scale(1.2);">
       </div>
-      <button type="submit" style="background-color: #007bff; color: #fff; border: none; padding: 0.8rem 1.6rem; font-size: 1.2rem; border-radius: 8px; cursor: pointer;">
-        Launch Robot
-      </button>
+      <button type="submit" class="btn btn-primary">Launch Robot</button>
     </form>
-    <div class="progress" style="width: 80%; height: 25px;">
-      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress" style="width: 80%;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
       </div>
     </div>
   </div>
-  <!-- Right panel: image -->
-  <div style="flex: 0 0 auto; width: 500px; text-align:center; padding: 0 20px;">
-    <img src="{{ url_for('static', filename='images/sample.jpg') }}" alt="Robot &amp; Camera Interface" style="max-width: 300px; border: 2px solid #ccc; border-radius: 5px;">
+  
+  <!-- Right Panel: Camera View -->
+  <div class="panel image-panel">
+    <h5>Camera View</h5>
+    <img src="{{ url_for('static', filename='images/sample.jpg') }}" alt="Robot &amp; Camera Interface">
   </div>
 </div>
 {% endblock %}
